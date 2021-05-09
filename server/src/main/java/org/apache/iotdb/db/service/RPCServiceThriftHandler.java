@@ -16,12 +16,13 @@
  */
 package org.apache.iotdb.db.service;
 
+import org.apache.iotdb.db.service.thrift.TServerEventHandlerAdaptor;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.server.ServerContext;
 import org.apache.thrift.server.TServerEventHandler;
 import org.apache.thrift.transport.TTransport;
 
-public class RPCServiceThriftHandler implements TServerEventHandler {
+public class RPCServiceThriftHandler extends TServerEventHandlerAdaptor {
   private TSServiceImpl serviceImpl;
 
   RPCServiceThriftHandler(TSServiceImpl serviceImpl) {
@@ -29,24 +30,8 @@ public class RPCServiceThriftHandler implements TServerEventHandler {
   }
 
   @Override
-  public ServerContext createContext(TProtocol arg0, TProtocol arg1) {
-    // nothing
-    return null;
-  }
-
-  @Override
   public void deleteContext(ServerContext arg0, TProtocol arg1, TProtocol arg2) {
     // release query resources.
     serviceImpl.handleClientExit();
-  }
-
-  @Override
-  public void preServe() {
-    // nothing
-  }
-
-  @Override
-  public void processContext(ServerContext arg0, TTransport arg1, TTransport arg2) {
-    // nothing
   }
 }

@@ -16,26 +16,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.iotdb.db.sync.receiver;
 
-import org.apache.iotdb.db.service.thrift.TServerEventHandlerAdaptor;
-import org.apache.iotdb.db.sync.receiver.transfer.SyncServiceImpl;
+package org.apache.iotdb.db.service.thrift;
 
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.server.ServerContext;
 import org.apache.thrift.server.TServerEventHandler;
 import org.apache.thrift.transport.TTransport;
 
-public class SyncServerThriftHandler extends TServerEventHandlerAdaptor {
-  private SyncServiceImpl serviceImpl;
+/**
+ * This class is an adaptor of TServerEventHandler.
+ * If you want to do some prepare work when a client connects to, then rewrite createContext().
+ * If you need to do some cleanup work after a client disconnects, then rewrite deleteContext().
+ *
+ */
+public class TServerEventHandlerAdaptor implements TServerEventHandler {
 
-  SyncServerThriftHandler(SyncServiceImpl serviceImpl) {
-    this.serviceImpl = serviceImpl;
+  @Override
+  public ServerContext createContext(TProtocol arg0, TProtocol arg1) {
+    // nothing
+    return null;
   }
 
   @Override
   public void deleteContext(ServerContext arg0, TProtocol arg1, TProtocol arg2) {
-    // release query resources.
-    serviceImpl.handleClientExit();
+    // release query resources or others
+  }
+
+  @Override
+  public void preServe() {
+    // nothing
+  }
+
+  @Override
+  public void processContext(ServerContext arg0, TTransport arg1, TTransport arg2) {
+    // nothing
   }
 }

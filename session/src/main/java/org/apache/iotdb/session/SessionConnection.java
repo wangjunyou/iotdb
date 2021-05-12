@@ -79,28 +79,28 @@ public class SessionConnection {
   public SessionConnection() {}
 
   public SessionConnection(Session session, EndPoint endPoint, ZoneId zoneId)
-      throws IoTDBConnectionException, TTransportException {
+      throws IoTDBConnectionException {
     this.session = session;
     this.endPoint = endPoint;
     this.zoneId = zoneId == null ? ZoneId.systemDefault() : zoneId;
     init(endPoint);
   }
 
-  private void init(EndPoint endPoint) throws IoTDBConnectionException, TTransportException {
+  private void init(EndPoint endPoint) throws IoTDBConnectionException {
     RpcTransportFactory.setDefaultBufferCapacity(session.thriftDefaultBufferSize);
     RpcTransportFactory.setThriftMaxFrameSize(session.thriftMaxFrameSize);
-    transport =
-        RpcTransportFactory.INSTANCE.getTransport(
-            new TSocket(
-                new TConfiguration(
-                    TConfiguration.DEFAULT_MAX_MESSAGE_SIZE,
-                    RpcUtils.THRIFT_FRAME_MAX_SIZE,
-                    TConfiguration.DEFAULT_RECURSION_DEPTH),
-                endPoint.getIp(),
-                endPoint.getPort(),
-                session.connectionTimeoutInMs));
-
     try {
+      transport =
+          RpcTransportFactory.INSTANCE.getTransport(
+              // as there is a try-catch already, we do not need to use TSocket.wrap
+              new TSocket(
+                  new TConfiguration(
+                      RpcUtils.THRIFT_FRAME_MAX_SIZE + 4,
+                      RpcUtils.THRIFT_FRAME_MAX_SIZE,
+                      TConfiguration.DEFAULT_RECURSION_DEPTH),
+                  endPoint.getIp(),
+                  endPoint.getPort(),
+                  session.connectionTimeoutInMs));
       transport.open();
     } catch (TTransportException e) {
       throw new IoTDBConnectionException(e);

@@ -74,9 +74,10 @@ public class IoTDBConnection implements Connection {
   private boolean isClosed = true;
   private SQLWarning warningChain = null;
   private TTransport transport;
+  // https://github.com/apache/thrift/blob/master/doc/specs/thrift-tconfiguration.md
   private TConfiguration tConfiguration =
       new TConfiguration(
-          TConfiguration.DEFAULT_MAX_MESSAGE_SIZE,
+          RpcUtils.THRIFT_FRAME_MAX_SIZE + 4,
           RpcUtils.THRIFT_FRAME_MAX_SIZE,
           TConfiguration.DEFAULT_RECURSION_DEPTH);
   /**

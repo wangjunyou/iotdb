@@ -41,10 +41,10 @@ import org.apache.iotdb.db.rescon.PrimitiveArrayManager;
 import org.apache.iotdb.db.rescon.SystemInfo;
 import org.apache.iotdb.db.service.IoTDB;
 import org.apache.iotdb.rpc.RpcUtils;
+import org.apache.iotdb.rpc.TSocketWrapper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.thrift.TConfiguration;
-import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
@@ -81,14 +81,14 @@ public class EnvironmentUtils {
 
   private static TConfiguration tConfiguration =
       new TConfiguration(
-          TConfiguration.DEFAULT_MAX_MESSAGE_SIZE,
+          RpcUtils.THRIFT_FRAME_MAX_SIZE + 4,
           RpcUtils.THRIFT_FRAME_MAX_SIZE,
           TConfiguration.DEFAULT_RECURSION_DEPTH);
 
   public static boolean examinePorts =
       Boolean.parseBoolean(System.getProperty("test.port.closed", "false"));
 
-  public static void cleanEnv() throws IOException, StorageEngineException, TTransportException {
+  public static void cleanEnv() throws IOException, StorageEngineException {
     // wait all compaction finished
     CompactionMergeTaskPoolManager.getInstance().waitAllCompactionFinish();
 
@@ -160,8 +160,8 @@ public class EnvironmentUtils {
     config.setMemtableSizeThreshold(oldGroupSizeInByte);
   }
 
-  private static boolean examinePorts() throws TTransportException {
-    TTransport transport = new TSocket(tConfiguration, "127.0.0.1", 6667, 100);
+  private static boolean examinePorts() {
+    TTransport transport = TSocketWrapper.wrap(tConfiguration, "127.0.0.1", 6667, 100);
     if (!transport.isOpen()) {
       try {
         transport.open();
@@ -173,7 +173,7 @@ public class EnvironmentUtils {
       }
     }
     // try sync service
-    transport = new TSocket(tConfiguration, "127.0.0.1", 5555, 100);
+    transport = TSocketWrapper.wrap(tConfiguration, "127.0.0.1", 5555, 100);
     if (!transport.isOpen()) {
       try {
         transport.open();

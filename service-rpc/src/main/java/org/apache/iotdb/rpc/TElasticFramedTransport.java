@@ -24,6 +24,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.apache.thrift.transport.TTransportFactory;
 import org.apache.thrift.transport.layered.TFramedTransport;
 
+// https://github.com/apache/thrift/blob/master/doc/specs/thrift-rpc.md
 public class TElasticFramedTransport extends TTransport {
 
   public static class Factory extends TTransportFactory {

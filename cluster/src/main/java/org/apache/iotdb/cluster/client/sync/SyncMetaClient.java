@@ -55,7 +55,7 @@ public class SyncMetaClient extends Client implements Closeable {
             RpcTransportFactory.INSTANCE.getTransport(
                 new TSocket(
                     new TConfiguration(
-                        TConfiguration.DEFAULT_MAX_MESSAGE_SIZE,
+                        RpcUtils.THRIFT_FRAME_MAX_SIZE + 4,
                         RpcUtils.THRIFT_FRAME_MAX_SIZE,
                         TConfiguration.DEFAULT_RECURSION_DEPTH),
                     node.getInternalIp(),

@@ -25,7 +25,7 @@ import org.apache.thrift.transport.TTransportException;
 
 /**
  * In Thrift 0.14.1, TSocket's constructor throws a never-happened exception. So, we screen the
- * exception
+ * exception https://issues.apache.org/jira/browse/THRIFT-5412
  */
 public class TSocketWrapper {
 

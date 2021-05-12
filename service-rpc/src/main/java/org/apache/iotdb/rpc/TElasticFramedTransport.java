@@ -142,14 +142,19 @@ public class TElasticFramedTransport extends TTransport {
 
   @Override
   public TConfiguration getConfiguration() {
-    return null;
+    return underlying.getConfiguration();
   }
 
   @Override
-  public void updateKnownMessageSize(long size) throws TTransportException {}
+  public void updateKnownMessageSize(long size) throws TTransportException {
+    // do nothing now.
+  }
 
   @Override
-  public void checkReadBytesAvailable(long numBytes) throws TTransportException {}
+  public void checkReadBytesAvailable(long numBytes) throws TTransportException {
+    // do nothing now.
+    // here we can do some checkm, e.g., see whether the memory is enough.
+  }
 
   @Override
   public void write(byte[] buf, int off, int len) {

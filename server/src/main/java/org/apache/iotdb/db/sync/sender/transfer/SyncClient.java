@@ -37,6 +37,7 @@ import org.apache.iotdb.db.sync.sender.recover.SyncSenderLogAnalyzer;
 import org.apache.iotdb.db.sync.sender.recover.SyncSenderLogger;
 import org.apache.iotdb.db.utils.SyncUtils;
 import org.apache.iotdb.rpc.RpcTransportFactory;
+import org.apache.iotdb.rpc.TConfigurationConst;
 import org.apache.iotdb.rpc.TSocketWrapper;
 import org.apache.iotdb.service.sync.thrift.ConfirmInfo;
 import org.apache.iotdb.service.sync.thrift.SyncService;
@@ -134,11 +135,7 @@ public class SyncClient implements ISyncClient {
     init();
   }
 
-  private TConfiguration tConfiguration =
-      new TConfiguration(
-          SyncConstant.DATA_CHUNK_SIZE + 4, // 4 is an interger of the frame size.
-          SyncConstant.DATA_CHUNK_SIZE,
-          TConfiguration.DEFAULT_RECURSION_DEPTH);
+  private TConfiguration tConfiguration = TConfigurationConst.defaultTConfiguration;
 
   public static SyncClient getInstance() {
     return InstanceHolder.INSTANCE;

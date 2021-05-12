@@ -1374,7 +1374,7 @@ public abstract class RaftMember {
     }
     try {
       return pool.getClient(node, activatedOnly);
-    } catch (IOException | TTransportException e) {
+    } catch (IOException e) {
       logger.warn("{} cannot connect to node {}", name, node, e);
       return null;
     }

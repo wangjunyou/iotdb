@@ -37,6 +37,7 @@ public class RPCServiceThriftHandler implements TServerEventHandler {
   @Override
   public void deleteContext(ServerContext arg0, TProtocol arg1, TProtocol arg2) {
     // release query resources.
+    System.out.println("some one quite.......");
     serviceImpl.handleClientExit();
   }
 

@@ -24,6 +24,7 @@ import org.apache.iotdb.rpc.RedirectException;
 import org.apache.iotdb.rpc.RpcTransportFactory;
 import org.apache.iotdb.rpc.RpcUtils;
 import org.apache.iotdb.rpc.StatementExecutionException;
+import org.apache.iotdb.rpc.TConfigurationConst;
 import org.apache.iotdb.service.rpc.thrift.EndPoint;
 import org.apache.iotdb.service.rpc.thrift.TSCloseSessionReq;
 import org.apache.iotdb.service.rpc.thrift.TSCreateAlignedTimeseriesReq;
@@ -48,7 +49,6 @@ import org.apache.iotdb.service.rpc.thrift.TSSetDeviceTemplateReq;
 import org.apache.iotdb.service.rpc.thrift.TSSetTimeZoneReq;
 import org.apache.iotdb.service.rpc.thrift.TSStatus;
 
-import org.apache.thrift.TConfiguration;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TCompactProtocol;
@@ -94,10 +94,7 @@ public class SessionConnection {
           RpcTransportFactory.INSTANCE.getTransport(
               // as there is a try-catch already, we do not need to use TSocket.wrap
               new TSocket(
-                  new TConfiguration(
-                      RpcUtils.THRIFT_FRAME_MAX_SIZE + 4,
-                      RpcUtils.THRIFT_FRAME_MAX_SIZE,
-                      TConfiguration.DEFAULT_RECURSION_DEPTH),
+                  TConfigurationConst.defaultTConfiguration,
                   endPoint.getIp(),
                   endPoint.getPort(),
                   session.connectionTimeoutInMs));

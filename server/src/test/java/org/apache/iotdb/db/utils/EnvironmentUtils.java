@@ -40,7 +40,7 @@ import org.apache.iotdb.db.query.udf.service.UDFRegistrationService;
 import org.apache.iotdb.db.rescon.PrimitiveArrayManager;
 import org.apache.iotdb.db.rescon.SystemInfo;
 import org.apache.iotdb.db.service.IoTDB;
-import org.apache.iotdb.rpc.RpcUtils;
+import org.apache.iotdb.rpc.TConfigurationConst;
 import org.apache.iotdb.rpc.TSocketWrapper;
 
 import org.apache.commons.io.FileUtils;
@@ -79,11 +79,7 @@ public class EnvironmentUtils {
 
   private static IoTDB daemon;
 
-  private static TConfiguration tConfiguration =
-      new TConfiguration(
-          RpcUtils.THRIFT_FRAME_MAX_SIZE + 4,
-          RpcUtils.THRIFT_FRAME_MAX_SIZE,
-          TConfiguration.DEFAULT_RECURSION_DEPTH);
+  private static TConfiguration tConfiguration = TConfigurationConst.defaultTConfiguration;
 
   public static boolean examinePorts =
       Boolean.parseBoolean(System.getProperty("test.port.closed", "false"));

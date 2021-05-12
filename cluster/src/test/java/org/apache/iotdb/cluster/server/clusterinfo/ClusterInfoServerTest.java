@@ -53,21 +53,22 @@ public class ClusterInfoServerTest {
 
   @Test
   public void testConnect() {
-    TTransport transport =
-        RpcTransportFactory.INSTANCE.getTransport(
-            new TSocket(
-                IoTDBDescriptor.getInstance().getConfig().getRpcAddress(),
-                ClusterDescriptor.getInstance().getConfig().getClusterInfoRpcPort()));
     try {
+      TTransport transport =
+          RpcTransportFactory.INSTANCE.getTransport(
+              new TSocket(
+                  IoTDBDescriptor.getInstance().getConfig().getRpcAddress(),
+                  ClusterDescriptor.getInstance().getConfig().getClusterInfoRpcPort()));
       transport.open();
+
+      // connection success means OK.
+      ClusterInfoService.Client client =
+          new ClusterInfoService.Client(new TBinaryProtocol(transport));
+      Assert.assertNotNull(client);
+      // client's methods have been tested on ClusterInfoServiceImplTest
+      transport.close();
     } catch (TTransportException e) {
       Assert.fail(e.getMessage());
     }
-    // connection success means OK.
-    ClusterInfoService.Client client =
-        new ClusterInfoService.Client(new TBinaryProtocol(transport));
-    Assert.assertNotNull(client);
-    // client's methods have been tested on ClusterInfoServiceImplTest
-    transport.close();
   }
 }

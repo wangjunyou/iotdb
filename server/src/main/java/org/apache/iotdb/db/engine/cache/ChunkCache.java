@@ -169,6 +169,7 @@ public class ChunkCache {
 
   /** clear LRUCache. */
   public void clear() {
+    lruCache.invalidateAll();
     lruCache.cleanUp();
   }
 

@@ -998,7 +998,7 @@ public class MManager {
     if (leaf != null) {
       return ((MeasurementMNode) leaf).getSchema();
     }
-    logger.error("cannot get schema {}", device.getDevice() + "." + measurement);
+    logger.warn("+++++ cannot get schema {}", device.getDevice() + "." + measurement);
     return null;
   }
 

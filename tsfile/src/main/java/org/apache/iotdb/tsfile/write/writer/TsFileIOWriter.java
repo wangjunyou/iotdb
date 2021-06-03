@@ -34,6 +34,7 @@ import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.file.metadata.statistics.Statistics;
 import org.apache.iotdb.tsfile.fileSystem.FSFactoryProducer;
+import org.apache.iotdb.tsfile.read.TsFileSequenceReader;
 import org.apache.iotdb.tsfile.read.common.Chunk;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.utils.BytesUtils;
@@ -47,11 +48,15 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -232,14 +237,19 @@ public class TsFileIOWriter {
     // serialize the SEPARATOR of MetaData
     ReadWriteIOUtils.write(MetaMarker.SEPARATOR, out.wrapAsStream());
 
+    logger.warn("-------------START: group ChunkMetadata by series-----------------");
+    Set<Path> expectedPaths = new HashSet<>();
     // group ChunkMetadata by series
     Map<Path, List<ChunkMetadata>> chunkMetadataListMap = new TreeMap<>();
     for (ChunkGroupMetadata chunkGroupMetadata : chunkGroupMetadataList) {
       for (ChunkMetadata chunkMetadata : chunkGroupMetadata.getChunkMetadataList()) {
         Path series = new Path(chunkGroupMetadata.getDevice(), chunkMetadata.getMeasurementUid());
+        expectedPaths.add(series);
+        logger.warn("++++++ endFile: {}", series.getFullPath());
         chunkMetadataListMap.computeIfAbsent(series, k -> new ArrayList<>()).add(chunkMetadata);
       }
     }
+    logger.warn("-------------END: group ChunkMetadata by series-------------------");
 
     MetadataIndexNode metadataIndex = flushMetadataIndex(chunkMetadataListMap);
     TsFileMetadata tsFileMetaData = new TsFileMetadata();
@@ -274,7 +284,44 @@ public class TsFileIOWriter {
     if (resourceLogger.isDebugEnabled() && file != null) {
       resourceLogger.debug("{} writer is closed.", file.getName());
     }
-    canWrite = false;
+
+    logger.warn("-------------START: write check-----------------");
+    try (TsFileSequenceReader reader = new TsFileSequenceReader(file.getAbsolutePath(), true)) {
+      Set<Path> actualPaths1 = new HashSet<>();
+      Set<Path> actualPaths2 = new HashSet<>();
+
+      for (Entry<String, List<TimeseriesMetadata>> entry :
+          reader.getAllTimeseriesMetadata().entrySet()) {
+        for (TimeseriesMetadata timeseriesMetadata : entry.getValue()) {
+          actualPaths1.add(new Path(entry.getKey(), timeseriesMetadata.getMeasurementId()));
+        }
+
+        Iterator<Map<String, List<ChunkMetadata>>> iterator =
+            reader.getMeasurementChunkMetadataListMapIterator(entry.getKey());
+        while (iterator.hasNext()) {
+          for (String m : iterator.next().keySet()) {
+            actualPaths2.add(new Path(entry.getKey(), m));
+          }
+        }
+      }
+
+      if (!actualPaths1.equals(expectedPaths)) {
+        logger.error("!!!!!!!!!!!! - 1 reader.getAllTimeseriesMetadata()");
+        logger.error(Arrays.toString(expectedPaths.toArray()));
+        logger.error(Arrays.toString(actualPaths1.toArray()));
+        logger.error("!!!!!!!!!!!!");
+      }
+
+      if (!actualPaths2.equals(expectedPaths)) {
+        logger.error("!!!!!!!!!!!! - 2 reader.getMeasurementChunkMetadataListMapIterator");
+        logger.error(Arrays.toString(expectedPaths.toArray()));
+        logger.error(Arrays.toString(actualPaths2.toArray()));
+        logger.error("!!!!!!!!!!!!");
+      }
+    } finally {
+      logger.warn("-------------END: write check-----------------");
+      canWrite = false;
+    }
   }
 
   /**

@@ -1323,6 +1323,10 @@ public class TsFileSequenceReader implements AutoCloseable {
             measurementChunkMetadataList
                 .computeIfAbsent(timeseriesMetadata.getMeasurementId(), m -> new ArrayList<>())
                 .addAll(timeseriesMetadata.getChunkMetadataList());
+            logger.warn(
+                "----- getMeasurementChunkMetadataListMapIterator#next(): {}.{}",
+                device,
+                timeseriesMetadata.getMeasurementId());
           }
           return measurementChunkMetadataList;
         } catch (IOException e) {

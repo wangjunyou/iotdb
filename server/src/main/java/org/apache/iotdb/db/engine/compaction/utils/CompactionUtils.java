@@ -196,8 +196,10 @@ public class CompactionUtils {
     if (isChunkMetadataEmpty) {
       return;
     }
-    IChunkWriter chunkWriter;
-    chunkWriter =
+    logger.warn(
+        "++++++ new ChunkWriterImpl in writeByDeserializePageMerge: "
+            + new PartialPath(device, entry.getKey()).getFullPath());
+    IChunkWriter chunkWriter =
         new ChunkWriterImpl(
             IoTDB.metaManager.getSeriesSchema(new PartialPath(device), entry.getKey()), true);
 
@@ -299,7 +301,8 @@ public class CompactionUtils {
             if (chunkMetadataListIteratorCache.get(reader).hasNext()) {
               sensorChunkMetadataListMap = chunkMetadataListIteratorCache.get(reader).next();
               for (String sensor : sensorChunkMetadataListMap.keySet()) {
-                logger.error("chunkMetadataListIterator get measurement:{}", device + "." + sensor);
+                logger.warn(
+                    "+++++ chunkMetadataListIterator get measurement:{}.{}", device, sensor);
               }
               chunkMetadataListCacheForMerge.put(reader, sensorChunkMetadataListMap);
             } else {

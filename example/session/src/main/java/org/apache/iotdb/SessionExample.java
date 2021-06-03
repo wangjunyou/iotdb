@@ -66,30 +66,30 @@ public class SessionExample {
     }
 
     createTimeseries();
-    createMultiTimeseries();
-    insertRecord();
+    //    createMultiTimeseries();
+    //    insertRecord();
     insertTablet();
-    insertTablets();
-    insertRecords();
-    nonQuery();
-    query();
-    queryWithTimeout();
-    rawDataQuery();
-    queryByIterator();
-    deleteData();
-    deleteTimeseries();
-    setTimeout();
-
-    sessionEnableRedirect = new Session(LOCAL_HOST, 6667, "root", "root");
-    sessionEnableRedirect.setEnableQueryRedirection(true);
-    sessionEnableRedirect.open(false);
-
-    // set session fetchSize
-    sessionEnableRedirect.setFetchSize(10000);
-
-    insertRecord4Redirect();
-    query4Redirect();
-    sessionEnableRedirect.close();
+    //    insertTablets();
+    //    insertRecords();
+    //    nonQuery();
+    //    query();
+    //    queryWithTimeout();
+    //    rawDataQuery();
+    //    queryByIterator();
+    //    deleteData();
+    //    deleteTimeseries();
+    //    setTimeout();
+    //
+    //    sessionEnableRedirect = new Session(LOCAL_HOST, 6667, "root", "root");
+    //    sessionEnableRedirect.setEnableQueryRedirection(true);
+    //    sessionEnableRedirect.open(false);
+    //
+    //    // set session fetchSize
+    //    sessionEnableRedirect.setFetchSize(10000);
+    //
+    //    insertRecord4Redirect();
+    //    query4Redirect();
+    //    sessionEnableRedirect.close();
     session.close();
   }
 
@@ -331,7 +331,7 @@ public class SessionExample {
     // Method 1 to add tablet data
     long timestamp = System.currentTimeMillis();
 
-    for (long row = 0; row < 100; row++) {
+    for (long row = 0; row < 10000000; row++) {
       int rowIndex = tablet.rowSize++;
       tablet.addTimestamp(rowIndex, timestamp);
       for (int s = 0; s < 3; s++) {
@@ -354,7 +354,7 @@ public class SessionExample {
     long[] timestamps = tablet.timestamps;
     Object[] values = tablet.values;
 
-    for (long time = 0; time < 100; time++) {
+    for (long time = 0; time < 1000; time++) {
       int row = tablet.rowSize++;
       timestamps[row] = time;
       for (int i = 0; i < 3; i++) {
